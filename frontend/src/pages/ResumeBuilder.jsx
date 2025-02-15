@@ -188,8 +188,8 @@ function ResumeBuilder() {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FileText className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">AI Resume Builder</h1>
+            {/* <FileText className="w-8 h-8 text-blue-600" />
+            <h1 className="text-3xl font-bold text-gray-900">AI Resume Builder</h1> */}
           </div>
           <button
             onClick={handlePrintWrapper}
