@@ -42,6 +42,7 @@ import SignUpPage from './pages/signUp';
 import ProtectedRoute from './route/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import TestResumes from './pages/teastResume';
+import ResumeCollection from './pages/ResumeCollection';
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
           <Route path="sign-in" element={<SignInPage />} />
           <Route path="sign-up" element={<SignUpPage />} />
           <Route path="test-resumes" element={<TestResumes />} />
+          <Route path='collections' element={<ResumeCollection/>}/>
         </Route>
       </Routes>
     </Router>
