@@ -710,7 +710,11 @@ export default function ResumeForm({ onSave }) {
       const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       // Use the current summary as input.
-      const prompt = `Improve and enhance the following professional summary for a resume:\n\n"${resume.summary}"\n\nProvide a clearer, more impactful version.`;
+      // const prompt = `Improve and enhance the following professional summary for a resume:\n\n"${resume.summary}"\n\nProvide a clearer, more impactful version.`;
+      const prompt = `Rewrite and enhance the following professional summary for a resume, focusing on quantifiable achievements, strong action verbs, and keywords relevant to the target industry (if known).  Aim for a concise and compelling summary that highlights the candidate's key skills and experience.  Prioritize showcasing the impact of their work and contributions.  Only return the rewritten summary; do not include any commentary or explanations.  If the provided summary is insufficient to make meaningful improvements, simply state "Insufficient information provided."
+
+"${resume.summary}"
+`;
       const result = await model.generateContent(prompt);
       const aiSummary = result.response.text();
       setResume((prev) => ({ ...prev, summary: aiSummary }));
