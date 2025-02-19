@@ -249,7 +249,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { useReactToPrint } from 'react-to-print';
 import { Edit, Trash2, Save, Download } from 'lucide-react';
-
+import toast from 'react-hot-toast';
+//import DeleteConfirmationDialog from '@/componet/DeleteConfirmationDialog';
+import DeleteConfirmationDialog from '../componet/DeleteConfirmationDialog';
 const ResumeCollection = () => {
   const { getToken, isLoaded } = useAuth();
   const [resumes, setResumes] = useState([]);
@@ -324,7 +326,8 @@ const ResumeCollection = () => {
       setResumes(resumes.map((r) => (r._id === updated._id ? updated : r)));
       setSelectedResume(updated);
       setEditMode(false);
-      alert('Resume updated successfully');
+      toast.success('Resume updated successfully');
+      //alert('Resume updated successfully');
     } catch (err) {
       setError(err.message);
     }
@@ -332,7 +335,7 @@ const ResumeCollection = () => {
 
   // Delete the selected resume.
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this resume?')) return;
+    //if (!window.confirm('Are you sure you want to delete this resume?')) return;
     try {
       const token = await getToken();
       const res = await fetch(`http://localhost:5000/api/resumes/${selectedResume._id}`, {
@@ -345,7 +348,7 @@ const ResumeCollection = () => {
       setResumes(resumes.filter((r) => r._id !== selectedResume._id));
       setSelectedResume(null);
       setEditMode(false);
-      alert('Resume deleted successfully');
+      //alert('Resume deleted successfully');
     } catch (err) {
       setError(err.message);
     }
@@ -468,12 +471,13 @@ const handlePrint = useReactToPrint({
             >
               <Edit className="w-5 h-5" /> Edit
             </button>
-            <button
+            {/* <button
               onClick={handleDelete}
               className="flex items-center gap-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             >
               <Trash2 className="w-5 h-5" /> Delete
-            </button>
+            </button> */}
+            <DeleteConfirmationDialog onDeleteAccount={handleDelete}/>
             <button
               onClick={handlePrint}
               className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"

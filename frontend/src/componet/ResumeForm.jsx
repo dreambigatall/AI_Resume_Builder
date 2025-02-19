@@ -635,6 +635,7 @@
 import React, { useState } from 'react';
 import { PlusCircle, Sparkles, Save, Trash2 } from 'lucide-react';
 import { useAuth } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
 
 export default function ResumeForm({ onSave }) {
   // Main resume state
@@ -795,11 +796,13 @@ export default function ResumeForm({ onSave }) {
   // New function to save resume to the backend collection.
   const handleSaveToCollection = async () => {
     if (!isLoaded) {
-      alert('Authentication is still loading. Please wait.');
+      toast.error('Authentication is still loading. Please wait.');
+      //alert('Authentication is still loading. Please wait.');
       return;
     }
     if (!validateForm()) {
-      alert('Please correct the errors in the form.');
+      toast.error('Please correct the errors in the form.');
+      //alert('Please correct the errors in the form.');
       return;
     }
     try {
@@ -814,7 +817,8 @@ export default function ResumeForm({ onSave }) {
       });
       if (response.ok) {
         const data = await response.json();
-        alert('Resume saved to collection successfully!');
+        toast.success('Resume saved to collection successfully!');
+        //alert('Resume saved to collection successfully!');
         // Optionally, clear the form or handle the returned data.
       } else {
         const errorData = await response.json();
@@ -822,7 +826,8 @@ export default function ResumeForm({ onSave }) {
       }
     } catch (error) {
       console.error(error);
-      alert('An error occurred while saving the resume.');
+      toast.error('An error occurred while saving the resume.');
+     // alert('An error occurred while saving the resume.');
     }
   };
 
