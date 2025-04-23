@@ -60,4 +60,4 @@ app.get("/hello", (req, res) => {
   });
 
 // Export the app wrapped with serverless-http
-module.exports.handler = serverless(app); // <-- important
+module.exports = serverless(app); // <-- important
