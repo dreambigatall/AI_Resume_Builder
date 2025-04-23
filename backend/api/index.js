@@ -41,12 +41,18 @@ dotenv.config();
 const app = express();
 
 // Connect to MongoDB
-connectDB();
+
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+// Lazy DB connect middleware
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState === 0) {
+    await connectDB();
+  }
+  next();
+});
 // Routes
 app.use('/api/resumes', resumeRoutes);
 
@@ -55,7 +61,7 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-app.get("/hello", (req, res) => {
+app.get("/api/hello", (req, res) => {
     res.send("Hello from Express!");
   });
 
