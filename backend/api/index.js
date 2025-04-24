@@ -1,52 +1,51 @@
 // api/index.js
+// api/index.js
 const express = require('express');
 const serverless = require('serverless-http');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('../config/db');
-const resumeRoutes = require('../routes/resumeRoutes');
 
 dotenv.config();
 const app = express();
 
-// — Basic middleware
+// — Middleware
 app.use(cors());
 app.use(express.json());
 
-// — Lazy-load DB once per container
+// — Lazy-connect, cached per container
+let isConnected = false;
 app.use(async (req, res, next) => {
-  try {
-    if (mongoose.connection.readyState === 0) {
-      console.log('🔌 Connecting to MongoDB…');
-      await connectDB();
-    }
-    next();
-  } catch (err) {
-    console.error('❌ DB connection error:', err);
-    return res.status(500).json({ message: 'DB connect failed' });
+  if (!isConnected) {
+    console.log('🔌 Connecting to MongoDB…');
+    await connectDB();
+    isConnected = true;
   }
+  next();
 });
 
-// — Your routes
-// app.get('/', (req, res) => {
-//   console.log('📬 GET /');
-//   res.send('✅ API is running');
-// });
+// — Only mount under /api
+const router = express.Router();
 
-app.get('/api/ping', (req, res) => {
+// Health-check
+router.get('/ping', (req, res) => {
   console.log('📬 GET /api/ping');
-  res.send('🏓 Pong!');
+  return res.status(200).send('🏓 Pong!');
 });
 
-app.use('/api/resumes', resumeRoutes);
+// Your resume routes
+const resumeRoutes = require('../routes/resumeRoutes');
+router.use('/resumes', resumeRoutes);
 
-// catch any unmatched API route
-app.use((req, res) => {
-  console.log(`📬 404 ${req.method} ${req.url}`);
-  res.status(404).send('Not found');
+// Catch-all for anything else under /api
+router.use((req, res) => {
+  console.log(`📬 404 /api${req.url}`);
+  return res.status(404).send('Not found');
 });
 
-// — Export the serverless handler
+app.use('/api', router);
+
 module.exports = serverless(app);
+
 
