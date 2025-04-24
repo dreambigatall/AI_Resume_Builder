@@ -123,33 +123,31 @@
 
 // module.exports = handler; // Export the wrapped handler
 // api/index.js
+// api/index.js
 const express = require('express');
 const serverless = require('serverless-http');
-const mongoose = require('mongoose'); // Make sure mongoose is required
+const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('../config/db'); // Adjust path if needed
-const resumeRoutes = require('../routes/resumeRoutes'); // Adjust path if needed
+// const resumeRoutes = require('../routes/resumeRoutes'); // <-- COMMENT OUT FOR TESTING
 
 dotenv.config();
-const app = express(); // The main Express application instance
+const app = express();
 
 // --- Standard Middleware ---
-app.use(cors()); // Enable CORS for all origins
-app.use(express.json()); // Parse JSON request bodies
+app.use(cors());
+app.use(express.json());
 
 // --- Database Connection Middleware ---
-// Runs for EVERY request before routing logic
 app.use(async (req, res, next) => {
     const reqId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
     try {
-        // req.originalUrl here SHOULD reflect the path before the Vercel rewrite
-        // e.g., /ping, /resumes/123, /
         console.log(`[${reqId}] Middleware: Entering for ${req.originalUrl} (Path: ${req.path})`);
         await connectDB();
         console.log(`[${reqId}] Middleware: connectDB() resolved. DB State: ${mongoose.connection.readyState}`);
         console.log(`[${reqId}] Middleware: Calling next().`);
-        next(); // Proceed to the router
+        next();
         console.log(`[${reqId}] Middleware: Control returned after next() executed.`);
     } catch (error) {
         console.error(`[${reqId}] Middleware: Failed to establish DB connection:`, error);
@@ -157,25 +155,23 @@ app.use(async (req, res, next) => {
     }
 });
 
-
 // --- Main Application Router ---
-// This router now handles ALL paths from the root ('/') because of the Vercel rewrite
 const router = express.Router();
 
-// Root path handler (handles requests originally to '/')
+// Root path handler
 router.get('/', (req, res) => {
     const reqId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
     console.log(`[${reqId}] Router: GET / handler executing.`);
-    res.status(200).send("API Root OK (Vercel Rewrite Active)");
+    res.status(200).send("API Root OK (Vercel Rewrite Active - NO RESUME ROUTES)");
     console.log(`[${reqId}] Router: GET / response sent.`);
 });
 
-// Health-check endpoint (handles requests originally to '/ping')
+// Health-check endpoint
 router.get('/ping', (req, res) => {
     const reqId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
     console.log(`[${reqId}] Router: GET /ping handler entered.`);
     const dbState = mongoose.connection.readyState;
-    const responseMessage = `🏓 Pong! (DB State: ${dbState})`;
+    const responseMessage = `🏓 Pong! (DB State: ${dbState}) (NO RESUME ROUTES)`;
     console.log(`[${reqId}] Router: Sending response: ${responseMessage}`);
     try {
         res.status(200).send(responseMessage);
@@ -188,22 +184,20 @@ router.get('/ping', (req, res) => {
     }
 });
 
-// Mount your actual resume API routes (handles requests originally to '/resumes/*')
-// Note: resumeRoutes should define routes relative to its mount point
-// e.g., inside resumeRoutes: router.get('/:id', ...) handles '/resumes/:id'
-router.use('/resumes', resumeRoutes);
+// --- COMMENT OUT resumeRoutes usage ---
+// router.use('/resumes', resumeRoutes);
+// --- END COMMENT OUT ---
+
 
 // --- Mount the main router directly onto the app ---
-// It will handle all requests from the root ('/') onwards
 app.use('/', router);
 
 
 // --- Final Catch-All 404 Handler ---
-// This will catch any request path that wasn't matched by the router above
 app.use((req, res) => {
     const reqId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
     console.log(`[${reqId}] App 404: Catch-all hit for ${req.originalUrl}`);
-    res.status(404).send("Resource Not Found");
+    res.status(404).send("Resource Not Found (NO RESUME ROUTES)");
 });
 
 
@@ -227,4 +221,4 @@ const handler = serverless(app, {
     }
 });
 
-module.exports = handler; // Export the wrapped handler
+module.exports = handler;
