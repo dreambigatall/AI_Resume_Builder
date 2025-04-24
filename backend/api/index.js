@@ -41,6 +41,12 @@ app.get('/api/ping', (req, res) => {
 
 app.use('/api/resumes', resumeRoutes);
 
+// catch any unmatched API route
+app.use((req, res) => {
+  console.log(`📬 404 ${req.method} ${req.url}`);
+  res.status(404).send('Not found');
+});
+
 // — Export the serverless handler
 module.exports = serverless(app);
 
