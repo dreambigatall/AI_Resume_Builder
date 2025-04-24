@@ -29,10 +29,10 @@ app.use(async (req, res, next) => {
 });
 
 // — Your routes
-app.get('/', (req, res) => {
-  console.log('📬 GET /');
-  res.send('✅ API is running');
-});
+// app.get('/', (req, res) => {
+//   console.log('📬 GET /');
+//   res.send('✅ API is running');
+// });
 
 app.get('/api/ping', (req, res) => {
   console.log('📬 GET /api/ping');
