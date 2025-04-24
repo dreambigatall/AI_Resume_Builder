@@ -48,11 +48,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 // Lazy DB connect middleware
+// Lazy DB connection only if needed
 app.use(async (req, res, next) => {
-  if (mongoose.connection.readyState === 0) {
-    await connectDB();
+  try {
+    if (mongoose.connection.readyState === 0) {
+      console.log('🛠 Connecting to MongoDB...');
+      await connectDB();
+    }
+    next();
+  } catch (err) {
+    console.error('❌ Failed to connect to DB:', err);
+    res.status(500).json({ message: 'Internal server error' });
   }
-  next();
 });
 
 app.use((req, res, next) => {
